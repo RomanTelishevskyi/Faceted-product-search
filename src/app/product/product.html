@@ -1,0 +1,25 @@
+<div class="product-card">
+  <img class="product-photo" [src]="photoSrc" [alt]="photoAlt" />
+
+  <div class="product-info">
+    <div class="product-row">
+      <span class="label">ID</span>
+      <span class="value">{{ id }}</span>
+    </div>
+
+    <div class="product-row">
+      <span class="label">Name</span>
+      <span class="value">{{ name }}</span>
+    </div>
+
+    <div class="product-row">
+      <span class="label">Brand</span>
+      <span class="value">{{ brand }}</span>
+    </div>
+
+    <div class="product-row">
+      <span class="label">Categories</span>
+      <span class="value categories">{{ categories.join(', ') }}</span>
+    </div>
+  </div>
+</div>
