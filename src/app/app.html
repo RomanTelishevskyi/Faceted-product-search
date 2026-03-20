@@ -16,15 +16,14 @@
 
   <aside class="filters">
     <h2>Filters</h2>
-    <p>Filters
-      asdasdasdasdasdasdasd
-      asdasda
-      dasdas
-      dasdas
-      dasdasdas
-      dasda
-      sdasd
-      asdasd</p>
+    <p>Brands</p>
+    @for (brand of brands; track brand) {
+      <app-filter-item [name]=brand></app-filter-item>
+    }
+    <p>Categories</p>
+    @for (category of categories; track category) {
+      <app-filter-item [name]=category></app-filter-item>
+    }
   </aside>
 </div>
 

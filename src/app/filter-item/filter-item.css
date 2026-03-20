@@ -1,0 +1,9 @@
+.filter-item {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.filter-label span {
+  flex: 1;
+  line-height: 1.2;
+}
