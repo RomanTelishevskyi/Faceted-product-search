@@ -36,7 +36,7 @@ public class Yes implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         ResponseDTO response = restClient.get()
-                .uri("https://world.openfoodfacts.org/api/v2/search?countries=uk&page_size=100")
+                .uri("https://world.openfoodfacts.org/api/v2/search?page_size=100")
                 .retrieve()
                 .body(ResponseDTO.class);
 
