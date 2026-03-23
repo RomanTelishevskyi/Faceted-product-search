@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/categories")
-@CrossOrigin(origins = "https://faceted-amazon-like-product-search.vercel.app")
+@CrossOrigin(origins = "*")
 public class CategoriesController {
 
     private final CategoriesService categoriesService;
