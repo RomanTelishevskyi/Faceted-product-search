@@ -1,11 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
-import { Product } from './product/product';
-import { CategoriesService, Category } from './services/categories.service';
-import { FilterItem } from './filter-item/filter-item';
-import { BrandService, Brand } from './services/brand.service';
-import { ProductDTO, ProductService } from './services/product.service';
-import { FacetService, Facet } from './services/facet.service';
+import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
+import {Product} from './product/product';
+import {CategoriesService, Category} from './services/categories.service';
+import {FilterItem} from './filter-item/filter-item';
+import {BrandService, Brand} from './services/brand.service';
+import {ProductDTO, ProductService} from './services/product.service';
+import {FacetService, Facet} from './services/facet.service';
 
 @Component({
   selector: 'app-root',
@@ -14,21 +14,17 @@ import { FacetService, Facet } from './services/facet.service';
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-  private allCategories: Category[] = [];
-  private allBrands: Brand[] = [];
-  private facetCounts: Facet[] = [];
-
+  allCategories: Category[] = [];
+  allBrands: Brand[] = [];
+  facetCounts: Facet[] = [];
   categories: Category[] = [];
   brands: Brand[] = [];
   products: ProductDTO[] = [];
-
   selectedCategoryIds: number[] = [];
   selectedBrandIds: number[] = [];
-
   appliedCategoryIds: number[] = [];
   appliedBrandIds: number[] = [];
-
-  searchTerm = '';
+  name = '';
   showAllCategories = false;
   showAllBrands = false;
   loading = false;
@@ -44,7 +40,8 @@ export class App implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.categoriesService.getCategories().subscribe({
@@ -89,7 +86,7 @@ export class App implements OnInit {
 
     this.appliedCategoryIds = [...this.selectedCategoryIds];
     this.appliedBrandIds = [...this.selectedBrandIds];
-    this.searchTerm = partialNameParam;
+    this.name = partialNameParam;
 
     this.resetResults();
     this.loadData();
@@ -97,7 +94,7 @@ export class App implements OnInit {
 
   onSearchInput(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.searchTerm = input.value;
+    this.name = input.value;
     this.resetResults();
     this.loadData();
   }
@@ -123,7 +120,7 @@ export class App implements OnInit {
       queryParams: {
         categoryIds: this.appliedCategoryIds.length ? this.appliedCategoryIds.join(',') : null,
         brandIds: this.appliedBrandIds.length ? this.appliedBrandIds.join(',') : null,
-        partialName: this.searchTerm.trim() ? this.searchTerm.trim() : null
+        partialName: this.name.trim() ? this.name.trim() : null
       },
       queryParamsHandling: 'merge',
       replaceUrl: true
@@ -159,7 +156,7 @@ export class App implements OnInit {
   }
 
   private loadProductsPage(append: boolean) {
-    const partialName = this.searchTerm.trim();
+    const partialName = this.name.trim();
 
     this.productService
       .getProducts(this.appliedCategoryIds, this.appliedBrandIds, partialName, this.offset)
@@ -188,7 +185,7 @@ export class App implements OnInit {
 
     this.loadProductsPage(false);
 
-    const partialName = this.searchTerm.trim();
+    const partialName = this.name.trim();
     this.facetService.getFacets(this.appliedCategoryIds, this.appliedBrandIds, partialName).subscribe({
       next: (data) => {
         this.rebuildAvailableFiltersFromFacets(data);

@@ -7,7 +7,7 @@ import {Component, Input} from '@angular/core';
   styleUrl: './product.css',
 })
 export class Product {
-  @Input() photoSrc = 'https://via.placeholder.com/72';
+  @Input() photoSrc = '';
   @Input() photoAlt = 'Product photo';
   @Input() id = 1;
   @Input() name = 'Product name';

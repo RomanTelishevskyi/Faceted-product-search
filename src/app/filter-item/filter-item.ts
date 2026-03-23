@@ -14,10 +14,6 @@ export class FilterItem {
 
   onChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    console.log('[FilterItem] checkbox changed');
-    console.log('[FilterItem] name:', this.name);
-    console.log('[FilterItem] checked:', input.checked);
-
     this.checkedChange.emit(input.checked);
   }
 }
