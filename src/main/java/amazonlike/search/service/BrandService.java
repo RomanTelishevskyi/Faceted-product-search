@@ -31,4 +31,8 @@ public class BrandService {
     public void deleteById(int id) {
         brandRepository.deleteById(id);
     }
+
+    public Optional<Brand> findByName(String name) {
+        return brandRepository.findByName(name);
+    }
 }

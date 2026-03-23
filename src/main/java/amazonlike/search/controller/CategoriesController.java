@@ -33,6 +33,11 @@ public class CategoriesController {
         categoriesService.deleteById(id);
     }
 
+    @GetMapping("/name/{name}")
+    public Optional<Categories> findByName(@PathVariable String name) {
+        return categoriesService.findByName(name);
+    }
+
     @GetMapping("/{id}")
     public Optional<Categories> findById(@PathVariable int id) {
         return categoriesService.findById(id);

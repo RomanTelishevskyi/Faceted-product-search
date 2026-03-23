@@ -3,13 +3,13 @@ package amazonlike.search.DTO;
 import java.util.List;
 
 public class ResponseDTO {
-    private List<ProductDTO> products;
+    private List<ProductFromApiDTO> products;
 
-    public List<ProductDTO> getProducts() {
+    public List<ProductFromApiDTO> getProducts() {
         return products;
     }
 
-    public void setProducts(List<ProductDTO> products) {
+    public void setProducts(List<ProductFromApiDTO> products) {
         this.products = products;
     }
 }

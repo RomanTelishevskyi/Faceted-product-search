@@ -1,5 +1,6 @@
 package amazonlike.search.controller;
 
+import amazonlike.search.DTO.ProductToClientDTO;
 import amazonlike.search.model.Product;
 import amazonlike.search.service.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,8 @@ public class ProductController {
         return productService.findById(id);
     }
 
+
+
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable int id) {
         productService.deleteById(id);
@@ -38,10 +41,11 @@ public class ProductController {
         productService.save(product);
     }
 
-    /*
-    findByName
-    findByPartName
-    findByCategory
-    findByBrand
-     */
+    @GetMapping("/search")
+    public List<ProductToClientDTO> search(
+            @RequestParam(required = false) List<Integer> brandIds,
+            @RequestParam(required = false) List<Integer> categoryIds
+    ) {
+        return productService.searchProducts(brandIds, categoryIds);
+    }
 }

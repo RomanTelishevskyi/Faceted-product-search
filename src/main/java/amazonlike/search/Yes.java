@@ -1,15 +1,22 @@
 package amazonlike.search;
-
-import amazonlike.search.DTO.ResponseDTO;
+/*
 import amazonlike.search.model.*;
 import amazonlike.search.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class Yes implements CommandLineRunner {
+
 
     private final RestClient restClient;
     private final ProductRepository productRepository;
@@ -35,31 +42,87 @@ public class Yes implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        ResponseDTO response = restClient.get()
-                .uri("https://world.openfoodfacts.org/api/v2/search?page_size=100")
-                .retrieve()
-                .body(ResponseDTO.class);
+        importFromCsvDump();
+    }
 
-        if (response == null || response.getProducts() == null) {
-            System.out.println("No products found");
-            return;
-        }
+    private void importFromCsvDump() {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                new ClassPathResource("en.openfoodfacts.org.products.csv").getInputStream(),
+                StandardCharsets.UTF_8))) {
 
-        response.getProducts().forEach(dto -> {
-            if (dto.getProductName() == null || dto.getProductName().isBlank()) {
+            String headerLine = reader.readLine();
+            if (headerLine == null || headerLine.isBlank()) {
+                System.out.println("file is empty.");
                 return;
             }
 
-            Product product = new Product();
-            product.setName(dto.getProductName());
-            product.setImage(dto.getImageFrontUrl());
-            product = productRepository.save(product);
+            String[] headers = headerLine.split("\t", -1);
+            Map<String, Integer> indexByName = new HashMap<>();
+            for (int i = 0; i < headers.length; i++) {
+                indexByName.put(headers[i].trim(), i);
+            }
 
-            saveBrands(product, dto.getBrands());
-            saveCategories(product, dto.getCategories());
+            int savedCount = 0;
+            String line;
 
-            System.out.println("Saved: " + product.getName());
-        });
+            while ((line = reader.readLine()) != null) {
+                if (savedCount >= 10_000) {
+                    break;
+                }
+
+                if (line.isBlank()) {
+                    continue;
+                }
+
+                String[] columns = line.split("\t", -1);
+
+                String productName = getColumn(columns, indexByName, "product_name");
+                if (productName.isBlank()) {
+                    continue;
+                }
+
+                Product product = new Product();
+                product.setName(productName);
+
+                String imageUrl = getColumn(columns, indexByName, "image_url");
+                if (imageUrl.isBlank()|| imageUrl.contains("invalid")) {
+                    continue;
+                }
+
+                product.setImage(imageUrl);
+                product = productRepository.save(product);
+
+                saveBrands(product, getColumn(columns, indexByName, "brands"));
+                saveCategories(product, getColumn(columns, indexByName, "categories"));
+
+                savedCount++;
+                System.out.println("Saved " + savedCount + ": " + product.getName());
+            }
+
+            System.out.println("Finished TSV import. Total saved: " + savedCount);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to import Open Food Facts TSV dump", e);
+        }
+    }
+
+    private String getColumn(String[] columns, Map<String, Integer> indexByName, String columnName) {
+        Integer index = indexByName.get(columnName);
+        if (index == null || index < 0 || index >= columns.length) {
+            return "";
+        }
+        return unquote(columns[index]).trim();
+    }
+
+    private String unquote(String value) {
+        if (value == null) {
+            return "";
+        }
+        String trimmed = value.trim();
+        if (trimmed.length() >= 2 && trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
+            trimmed = trimmed.substring(1, trimmed.length() - 1);
+        }
+        return trimmed.replace("\"\"", "\"");
     }
 
     private void saveBrands(Product product, String brandsText) {
@@ -114,3 +177,4 @@ public class Yes implements CommandLineRunner {
         }
     }
 }
+*/

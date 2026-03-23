@@ -28,6 +28,11 @@ public class BrandController {
         return brandService.findById(id);
     }
 
+    @GetMapping("/name/{name}")
+    public Optional<Brand> findByName(@PathVariable String name) {
+        return brandService.findByName(name);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable int id) {
         brandService.deleteById(id);

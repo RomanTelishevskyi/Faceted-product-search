@@ -30,6 +30,10 @@ public class CategoriesService {
         return categoriesRepository.findById(id);
     }
 
+    public Optional<Categories> findByName(String name) {
+        return categoriesRepository.findByName(name);
+    }
+
     public void deleteById(int id) {
         categoriesRepository.deleteById(id);
     }

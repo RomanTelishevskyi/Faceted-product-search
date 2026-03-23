@@ -2,7 +2,7 @@ package amazonlike.search.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ProductDTO {
+public class ProductFromApiDTO {
     @JsonProperty("product_name")
     private String productName;
 
