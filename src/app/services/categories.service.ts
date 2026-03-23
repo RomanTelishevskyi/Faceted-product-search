@@ -11,7 +11,7 @@ export interface Category {
 })
 export class CategoriesService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/categories/';
+  private apiUrl = 'https://faceted-product-search.onrender.com/categories/';
 
   getCategories() {
     return this.http.get<Category[]>(this.apiUrl);

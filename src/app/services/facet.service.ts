@@ -15,7 +15,7 @@ export interface Facet {
 })
 export class FacetService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/products/facets';
+  private apiUrl = 'https://faceted-product-search.onrender.com/facets';
 
   getFacets(categoryIds: number[] = [], brandIds: number[] = [], partialName: string = '') {
     let params = new HttpParams();

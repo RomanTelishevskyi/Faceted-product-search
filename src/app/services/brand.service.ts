@@ -11,7 +11,7 @@ export interface Brand {
 })
 export class BrandService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/brand/';
+  private apiUrl = 'https://faceted-product-search.onrender.com/brand/';
 
   getBrands() {
     return this.http.get<Brand[]>(this.apiUrl);
