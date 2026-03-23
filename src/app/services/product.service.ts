@@ -14,7 +14,7 @@ export interface ProductDTO {
 })
 export class ProductService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://faceted-product-search.onrender.com/search';
+  private apiUrl = 'https://faceted-product-search.onrender.com/products/search';
 
   getProducts(
     categoryIds: number[] = [],
