@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/categories")
+@CrossOrigin(origins = "*")
 public class CategoriesController {
 
     private final CategoriesService categoriesService;
