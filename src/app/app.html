@@ -10,19 +10,56 @@
     </header>
 
     <main class="content">
-      <app-product></app-product>
+      @if (loading) {
+        <p class="loading-text">Loading products...</p>
+      } @else {
+        @for (product of products; track product.id) {
+          <app-product
+            [id]="product.id"
+            [name]="product.productName"
+            [photoSrc]="product.imageFrontUrl"
+            [brands]="product.brands"
+            [categories]="product.categories">
+          </app-product>
+        }
+      }
     </main>
   </div>
 
   <aside class="filters">
     <h2>Filters</h2>
+
+    <button type="button" (click)="confirmChoices()">
+      confirm choices
+    </button>
+
     <p>Brands</p>
-    @for (brand of brands; track brand) {
-      <app-filter-item [name]=brand></app-filter-item>
+    @for (brand of visibleBrands; track brand.id) {
+      <app-filter-item
+        [name]="brand.name"
+        (checkedChange)="toggleBrand(brand.id, $event)"
+        [checked]="selectedBrandIds.includes(brand.id)">
+      </app-filter-item>
     }
+    @if (brands.length > 10) {
+      <button type="button" (click)="toggleBrands()">
+        {{ showAllBrands ? 'Show less' : 'Show more' }}
+      </button>
+    }
+
     <p>Categories</p>
-    @for (category of categories; track category) {
-      <app-filter-item [name]=category></app-filter-item>
+
+    @for (category of visibleCategories; track category.id) {
+      <app-filter-item
+        [name]="category.name"
+        (checkedChange)="toggleCategory(category.id, $event)"
+        [checked]="selectedCategoryIds.includes(category.id)">
+      </app-filter-item>
+    }
+    @if (categories.length > 10) {
+      <button type="button" (click)="toggleCategories()">
+        {{ showAllCategories ? 'Show less' : 'Show more' }}
+      </button>
     }
   </aside>
 </div>

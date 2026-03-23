@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-product',
@@ -9,8 +9,8 @@ import { Component, Input } from '@angular/core';
 export class Product {
   @Input() photoSrc = 'https://via.placeholder.com/72';
   @Input() photoAlt = 'Product photo';
-  @Input() id = 'ID-001';
+  @Input() id = 1;
   @Input() name = 'Product name';
-  @Input() brand = 'Brand name';
-  @Input() categories: string[] = ['Category 1', 'Category 2'];
+  @Input() brands = 'Brand name';
+  @Input() categories: string = 'Category 1, Category 2';
 }
