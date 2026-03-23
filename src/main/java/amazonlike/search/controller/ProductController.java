@@ -1,5 +1,6 @@
 package amazonlike.search.controller;
 
+import amazonlike.search.DTO.FacetDTO;
 import amazonlike.search.DTO.ProductToClientDTO;
 import amazonlike.search.model.Product;
 import amazonlike.search.service.ProductService;
@@ -30,7 +31,6 @@ public class ProductController {
     }
 
 
-
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable int id) {
         productService.deleteById(id);
@@ -44,8 +44,19 @@ public class ProductController {
     @GetMapping("/search")
     public List<ProductToClientDTO> search(
             @RequestParam(required = false) List<Integer> brandIds,
-            @RequestParam(required = false) List<Integer> categoryIds
+            @RequestParam(required = false) List<Integer> categoryIds,
+            @RequestParam(required = false) String partialName,
+            @RequestParam(defaultValue = "0") int offset
     ) {
-        return productService.searchProducts(brandIds, categoryIds);
+        return productService.searchProducts(brandIds, categoryIds, partialName, offset);
+    }
+
+    @GetMapping("/facets")
+    public List<FacetDTO> facets(
+            @RequestParam(required = false) List<Integer> brandIds,
+            @RequestParam(required = false) List<Integer> categoryIds,
+            @RequestParam(required = false) String partialName
+    ) {
+        return productService.searchFacets(brandIds, categoryIds, partialName);
     }
 }

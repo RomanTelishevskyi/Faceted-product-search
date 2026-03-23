@@ -1,0 +1,25 @@
+CREATE TABLE products
+(
+    id    INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name  TEXT NOT NULL,
+    image TEXT,
+    brand TEXT
+);
+
+CREATE TABLE categories
+(
+    id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE product_categories
+(
+    product_id  INT REFERENCES products (id) ON DELETE CASCADE,
+    category_id INT REFERENCES categories (id) ON DELETE CASCADE,
+    PRIMARY KEY (product_id, category_id)
+);
+DROP TABLE products;
+DROP TABLE product_categories;
+DROP TABLE categories;
+DROP TABLE product_brands;
+DROP TABLE brands;

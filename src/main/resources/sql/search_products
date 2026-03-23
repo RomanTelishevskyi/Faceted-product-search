@@ -1,0 +1,67 @@
+CREATE OR REPLACE FUNCTION search_products(filters text[][], partial_name text, offset_count int)
+    RETURNS TABLE
+            (
+                product_id      integer,
+                product_name    text,
+                image_front_url text,
+                brands          text,
+                categories      text
+            )
+    LANGUAGE sql
+AS
+$$
+SELECT p.product_id,
+       p.name AS product_name,
+       p.image AS image_front_url,
+       COALESCE((
+                    SELECT STRING_AGG(DISTINCT b.name, ', ')
+                    FROM product_brands pb
+                             JOIN brands b ON b."brand_id" = pb.brand_id
+                    WHERE pb.product_id = p.product_id
+                ), '') AS brands,
+       COALESCE((
+                    SELECT STRING_AGG(DISTINCT c.name, ', ')
+                    FROM product_categories pc
+                             JOIN categories c ON c.category_id = pc.category_id
+                    WHERE pc.product_id = p.product_id
+                ), '') AS categories
+FROM products p
+WHERE
+    (
+        partial_name IS NULL
+            OR btrim(partial_name) = ''
+            OR p.name ILIKE '%' || partial_name || '%'
+        )
+  AND
+    (
+        filters IS NULL
+            OR cardinality(filters) = 0
+            OR NOT EXISTS (
+            SELECT 1
+            FROM generate_subscripts(filters, 1) AS i
+            WHERE NOT (
+                (
+                    filters[i][2] = 'b'
+                        AND EXISTS (
+                        SELECT 1
+                        FROM product_brands pb
+                        WHERE pb.product_id = p.product_id
+                          AND pb.brand_id = filters[i][1]::int
+                    )
+                    )
+                    OR
+                (
+                    filters[i][2] = 'c'
+                        AND EXISTS (
+                        SELECT 1
+                        FROM product_categories pc
+                        WHERE pc.product_id = p.product_id
+                          AND pc.category_id = filters[i][1]::int
+                    )
+                    )
+                )
+        )
+        )
+ORDER BY p.product_id
+LIMIT 50 OFFSET offset_count;
+$$;

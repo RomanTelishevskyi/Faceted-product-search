@@ -1,5 +1,6 @@
 package amazonlike.search.service;
 
+import amazonlike.search.DTO.FacetDTO;
 import amazonlike.search.DTO.ProductToClientDTO;
 import amazonlike.search.model.Product;
 import amazonlike.search.repository.ProductRepository;
@@ -39,22 +40,45 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public List<ProductToClientDTO> searchProducts(List<Integer> brandIds, List<Integer> categoryIds) {
-        String[][] values = convertFilters(brandIds, categoryIds);
+    public List<ProductToClientDTO> searchProducts(List<Integer> brandIds, List<Integer> categoryIds, String partialName, int offset) {
+    String[][] filters = convertFilters(brandIds, categoryIds);
+
+    return jdbcTemplate.query(
+            con -> {
+                var ps = con.prepareStatement("SELECT * FROM search_products(?::text[][], ?,?)");
+                ps.setArray(1, con.createArrayOf("text", filters));
+                ps.setString(2, partialName);
+                ps.setInt(3, offset);
+                return ps;
+            },
+            (rs, rowNum) -> {
+                ProductToClientDTO dto = new ProductToClientDTO();
+                dto.setId(rs.getInt("product_id"));
+                dto.setProductName(rs.getString("product_name"));
+                dto.setImageFrontUrl(rs.getString("image_front_url"));
+                dto.setBrands(rs.getString("brands"));
+                dto.setCategories(rs.getString("categories"));
+                return dto;
+            }
+    );
+}
+
+    public List<FacetDTO> searchFacets(List<Integer> brandIds, List<Integer> categoryIds, String partialName) {
+        String[][] filters = convertFilters(brandIds, categoryIds);
 
         return jdbcTemplate.query(
                 con -> {
-                    var ps = con.prepareStatement("SELECT * FROM search_products(?::text[][])");
-                    ps.setArray(1, con.createArrayOf("text", values));
+                    var ps = con.prepareStatement("SELECT * FROM search_facets(?::text[][], ?)");
+                    ps.setArray(1, con.createArrayOf("text", filters));
+                    ps.setString(2, partialName);
                     return ps;
                 },
                 (rs, rowNum) -> {
-                    ProductToClientDTO dto = new ProductToClientDTO();
-                    dto.setId(rs.getInt("product_id"));
-                    dto.setProductName(rs.getString("product_name"));
-                    dto.setBrands(rs.getString("brands"));
-                    dto.setImageFrontUrl(rs.getString("image_front_url"));
-                    dto.setCategories(rs.getString("categories"));
+                    FacetDTO dto = new FacetDTO();
+                    dto.setFacetType(rs.getString("facet_type"));
+                    dto.setFacetId(rs.getInt("facet_id"));
+                    dto.setFacetName(rs.getString("facet_name"));
+                    dto.setProductCount(rs.getInt("product_count"));
                     return dto;
                 }
         );
@@ -66,7 +90,10 @@ public class ProductService {
         if (brandIds != null) {
             for (Integer brandId : brandIds) {
                 if (brandId != null) {
-                    result.add(new String[]{String.valueOf(brandId), "b"});
+                    String[] filter = new String[2];
+                    filter[0] = String.valueOf(brandId);
+                    filter[1] = "b";
+                    result.add(filter);
                 }
             }
         }
@@ -74,7 +101,10 @@ public class ProductService {
         if (categoryIds != null) {
             for (Integer categoryId : categoryIds) {
                 if (categoryId != null) {
-                    result.add(new String[]{String.valueOf(categoryId), "c"});
+                    String[] filter = new String[2];
+                    filter[0] = String.valueOf(categoryId);
+                    filter[1] = "c";
+                    result.add(filter);
                 }
             }
         }

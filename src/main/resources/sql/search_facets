@@ -1,0 +1,81 @@
+create or replace function search_facets(filters text[], partial_name text)
+    returns TABLE(
+                     facet_type text,
+                     facet_id integer,
+                     facet_name text,
+                     product_count integer
+                 )
+    language sql
+as
+$$
+with filtered_products as (
+    select p.product_id
+    from products p
+    where
+        (
+            partial_name is null
+                or (partial_name) = ''
+                or p.name ilike '%' || partial_name || '%'
+            )
+      and (
+        filters is null
+            or cardinality(filters) = 0
+            or not exists (
+            select 1
+            from generate_subscripts(filters, 1) as i
+            where not (
+                (
+                    filters[i][2] = 'b'
+                        and exists (
+                        select 1
+                        from product_brands pb
+                        where pb.product_id = p.product_id
+                          and pb.brand_id = filters[i][1]::int
+                    )
+                    )
+                    or
+                (
+                    filters[i][2] = 'c'
+                        and exists (
+                        select 1
+                        from product_categories pc
+                        where pc.product_id = p.product_id
+                          and pc.category_id = filters[i][1]::int
+                    )
+                    )
+                )
+        )
+        )
+),
+     brand_counts as (
+         select
+             'brand'::text as facet_type,
+             b.brand_id as facet_id,
+             b.name as facet_name,
+             count(distinct fp.product_id)::int as product_count
+         from filtered_products fp
+                  join product_brands pb on pb.product_id = fp.product_id
+                  join brands b on b.brand_id = pb.brand_id
+         group by b.brand_id, b.name
+     ),
+     category_counts as (
+         select
+             'category'::text as facet_type,
+             c.category_id as facet_id,
+             c.name as facet_name,
+             count(distinct fp.product_id)::int as product_count
+         from filtered_products fp
+                  join product_categories pc on pc.product_id = fp.product_id
+                  join categories c on c.category_id = pc.category_id
+         group by c.category_id, c.name
+     )
+select *
+from (
+         select * from brand_counts
+         union all
+         select * from category_counts
+     ) t
+order by t.facet_type, t.facet_name;
+$$;
+
+alter function search_facets(text[], text) owner to roman;
