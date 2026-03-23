@@ -16,4 +16,8 @@ export class BrandService {
   getBrands() {
     return this.http.get<Brand[]>(this.apiUrl);
   }
+
+  getBrandByName(name: string) {
+    return this.http.get<Brand>(`${this.apiUrl}name/${encodeURIComponent(name)}`);
+  }
 }

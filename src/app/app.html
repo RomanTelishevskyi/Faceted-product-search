@@ -5,6 +5,9 @@
         <input
           class="search-input"
           type="text"
+          [value]="searchTerm"
+          (input)="onSearchInput($event)"
+          placeholder="Search products..."
         />
       </div>
     </header>
@@ -22,21 +25,22 @@
             [categories]="product.categories">
           </app-product>
         }
+
+        @if (hasMoreProducts) {
+          <button type="button" class="load-more-button" (click)="loadMore()" [disabled]="loadingMore">
+            {{ loadingMore ? 'Loading more...' : 'Load more' }}
+          </button>
+        }
       }
     </main>
   </div>
 
   <aside class="filters">
-    <h2>Filters</h2>
-
-    <button type="button" (click)="confirmChoices()">
-      confirm choices
-    </button>
-
-    <p>Brands</p>
+    <h2>Brands</h2>
     @for (brand of visibleBrands; track brand.id) {
       <app-filter-item
         [name]="brand.name"
+        [count]="getBrandCount(brand.id)"
         (checkedChange)="toggleBrand(brand.id, $event)"
         [checked]="selectedBrandIds.includes(brand.id)">
       </app-filter-item>
@@ -47,11 +51,12 @@
       </button>
     }
 
-    <p>Categories</p>
+    <h2>Categories</h2>
 
     @for (category of visibleCategories; track category.id) {
       <app-filter-item
         [name]="category.name"
+        [count]="getCategoryCount(category.id)"
         (checkedChange)="toggleCategory(category.id, $event)"
         [checked]="selectedCategoryIds.includes(category.id)">
       </app-filter-item>

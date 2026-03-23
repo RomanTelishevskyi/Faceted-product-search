@@ -4,5 +4,8 @@
     [checked]="checked"
     (change)="onChange($event)"
   />
-  <span>{{ name }}</span>
+  <div class="filter-text">
+    <span class="filter-name">{{ name }}</span>
+    <span class="filter-count">{{ count }}</span>
+  </div>
 </div>

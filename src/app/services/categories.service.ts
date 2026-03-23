@@ -16,4 +16,8 @@ export class CategoriesService {
   getCategories() {
     return this.http.get<Category[]>(this.apiUrl);
   }
+
+  getCategoryByName(name: string) {
+    return this.http.get<Category>(`${this.apiUrl}name/${encodeURIComponent(name)}`);
+  }
 }

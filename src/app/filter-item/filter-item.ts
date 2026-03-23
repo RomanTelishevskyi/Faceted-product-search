@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class FilterItem {
   @Input() name: string = '';
+  @Input() count = 0;
   @Input() checked = false;
   @Output() checkedChange = new EventEmitter<boolean>();
 
