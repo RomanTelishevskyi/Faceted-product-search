@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://faceted-amazon-like-product-search.vercel.app")
 public class ProductController {
 
     private final ProductService productService;
