@@ -130,30 +130,17 @@ export class App implements OnInit {
   private rebuildAvailableFiltersFromFacets(facets: Facet[]) {
     this.facetCounts = facets;
 
-    const brandCounts = new Map<number, number>();
-    const categoryCounts = new Map<number, number>();
+    this.brands = this.allBrands.filter(brand => {
+      const count = this.getBrandCount(brand.id);
+      return count > 0 || this.selectedBrandIds.includes(brand.id);
+    });
 
-    for (const facet of facets) {
-      if (facet.facetType === 'brand') {
-        brandCounts.set(facet.facetId, facet.productCount);
-      } else if (facet.facetType === 'category') {
-        categoryCounts.set(facet.facetId, facet.productCount);
-      }
-    }
-
-    this.brands = this.allBrands.filter(brand => brandCounts.has(brand.id));
-    this.categories = this.allCategories.filter(category => categoryCounts.has(category.id));
-
-    this.selectedBrandIds = this.selectedBrandIds.filter(id =>
-      this.brands.some(brand => brand.id === id)
-    );
-    this.selectedCategoryIds = this.selectedCategoryIds.filter(id =>
-      this.categories.some(category => category.id === id)
-    );
-
-    this.appliedBrandIds = [...this.selectedBrandIds];
-    this.appliedCategoryIds = [...this.selectedCategoryIds];
+    this.categories = this.allCategories.filter(category => {
+      const count = this.getCategoryCount(category.id);
+      return count > 0 || this.selectedCategoryIds.includes(category.id);
+    });
   }
+
 
   private loadProductsPage(append: boolean) {
     const partialName = this.name.trim();
